@@ -13,8 +13,6 @@ datadir = Path("./data")
 
 class JICModel:
     """
-    Class: JICModel
-    --------------------------------------------------------------------------
     This is a class defined to encapsulate the Jet-in-Crossflow model
     """
 
@@ -44,8 +42,6 @@ class JICModel:
         load_MIB_profile=False,
     ):
         """
-        Method: __init__
-        --------------------------------------------------------------------------
         This method initializes the Jet-in-Crossflow model with the following
         parameters:
         gas: Cantera.Solution
@@ -523,8 +519,6 @@ class JICModel:
 
     def Z_3D(self, x, y, z):
         """
-        Method: Z_3D
-        --------------------------------------------------------------------------
         This method computes the mixture fraction for the Jet-in-Crossflow
         model in 3D for all injectors (summed).
         x: float
@@ -541,8 +535,6 @@ class JICModel:
 
     def grad_Z_3D(self, x, y, z):
         """
-        Method: grad_Z_3D
-        --------------------------------------------------------------------------
         This method computes the gradient of the mixture fraction for the Jet-in-Crossflow
         model in 3D for all injectors (summed).
         x: float
@@ -568,8 +560,6 @@ class JICModel:
 
     def Z_3D_adjusted(self, x, y, z):
         """
-        Method: Z_3D_adjusted
-        --------------------------------------------------------------------------
         This method computes the mixture fraction for the Jet-in-Crossflow
         model in 3D for all injectors (summed) with the boundary clipping adjustment.
         x: float
@@ -587,8 +577,6 @@ class JICModel:
 
     def grad_Z_3D_adjusted(self, x, y, z):
         """
-        Method: grad_Z_3D_adjusted
-        --------------------------------------------------------------------------
         This method computes the gradient of the mixture fraction for the Jet-in-Crossflow
         model in 3D for all injectors (summed) with the boundary clipping adjustment.
         x: float
@@ -602,8 +590,6 @@ class JICModel:
 
     def Z_3D_single_inj(self, x, y, z, z_inj):
         """
-        Method: Z_3D_single_inj
-        --------------------------------------------------------------------------
         This method computes the mixture fraction for the Jet-in-Crossflow
         model in 3D for a single injector at (x_inj, 0, z_inj).
         x: float
@@ -654,8 +640,6 @@ class JICModel:
 
     def grad_Z_3D_single_inj(self, x, y, z, z_inj):
         """
-        Method: grad_Z_3D_single_inj
-        --------------------------------------------------------------------------
         This method computes the gradient of the mixture fraction for the Jet-in-Crossflow
         model in 3D for a single injector at (x_inj, 0, z_inj).
         x: float
@@ -899,8 +883,6 @@ class JICModel:
 
     def estimate_p_Z(self, x, Z):
         """
-        Method: estimate_p_Z
-        --------------------------------------------------------------------------
         This method estimates the PDF of the mixture fraction at a given point
         using a Beta distribution.
         x: float
@@ -917,8 +899,6 @@ class JICModel:
 
     def update_fluid_tip_positions(self, dt, t, u):
         """
-        Method: update_fluid_tip_positions
-        --------------------------------------------------------------------------
         This method updates the position of the fluid tips based on the velocity
         of the fluid.
         t: float
@@ -943,12 +923,11 @@ class JICModel:
 
     def get_injector_sources(self, rho, rhoU, E, rhoZ, rhoC, gamma, t):
         """
-        Method: get_injector_sources
-        --------------------------------------------------------------------------
         This method computes a fuel injector source term to target the desired
         mixture fraction profile.
         """
         rhs = np.zeros((rho.shape[0], 5))
+        _ = (rhoU, E, rhoC, gamma, t)  # Hack to silence linter
 
         Z = rhoZ / rho
         last_fluid_tip = (
@@ -977,8 +956,6 @@ class JICModel:
 
     def calc_chemical_sources(self, write=False):
         """
-        Method: calc_chemical_sources
-        --------------------------------------------------------------------------
         This method precomputes the chemical source terms as a function of x and L.
         """
         print("Precomputing chemical sources...")
@@ -1049,8 +1026,6 @@ class JICModel:
 
     def get_chemical_sources(self, Z, C):
         """
-        Method: get_chemical_sources
-        --------------------------------------------------------------------------
         This method computes the chemical source terms [1/s] using the FPV table.
         Z: float
             The array of mixture fraction values at different grid points
@@ -1068,15 +1043,13 @@ class JICModel:
             mdot_inj = np.interp(
                 self.x[i_x], self.fluid_tips[:, 0], self.fluid_tips[:, 1]
             )
-            L = self.fpv_table.L_from_C(Z[i_x], C[i_x])
+            L = self.fpv_table.get_normalized_progress_variable(Z[i_x], C[i_x])
             omega_C[i_x] = self.omega_C_interpolators[i_x]((mdot_inj, L))
 
         return omega_C
 
     def get_MIB_profiles(self):
         """
-        Method: get_MIB_profiles
-        --------------------------------------------------------------------------
         This method returns the MIB profiles for the progress variable and chemical
         energy.
         """

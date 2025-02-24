@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate, optimize
 
-from stanscram.components.combustor import stanScram
+from stanscram.components.combustor import Combustor
 from stanscram.physics.flamelet import FPVTable
 from stanscram.physics.jicf import JICModel
 
@@ -461,7 +461,7 @@ jic = JICModel(
 ###################################################################
 
 # Initialize and run the simulation
-ss = stanScram(
+ss = Combustor(
     gas,
     h=h,
     w=w,
@@ -483,6 +483,6 @@ ss = stanScram(
     outputEvery=10,
     plotStateInterval=10,
 )
-ss.advanceSimulation(t_f[-1])
+ss.advance_simulation(t_f[-1])
 
 code.interact(local=locals())
